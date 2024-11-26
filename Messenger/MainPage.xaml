@@ -1,0 +1,21 @@
+﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Messenger.MainPage">
+
+    <StackLayout Padding="20">
+        <!-- Поля для авторизации -->
+        <Label Text="Авторизация" FontSize="24" HorizontalOptions="Center"/>
+        <Entry x:Name="UsernameEntry" Placeholder="Логин"/>
+        <Entry x:Name="PasswordEntry" Placeholder="Пароль" IsPassword="True"/>
+        <Button Text="Войти" Clicked="OnLoginClicked"/>
+
+        <!-- Поля для чата -->
+        <Label Text="Чат" FontSize="24" HorizontalOptions="Center" Margin="0,20,0,0"/>
+        <ScrollView>
+            <Label x:Name="MessagesLabel" LineBreakMode="WordWrap" />
+        </ScrollView>
+        <Entry x:Name="MessageEntry" Placeholder="Введите сообщение"/>
+        <Button Text="Отправить" Clicked="OnSendClicked"/>
+        <Button Text="Отключиться" Clicked="OnDisconnectClicked"/>
+    </StackLayout>
+</ContentPage>
