@@ -1,0 +1,14 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Messenger.LoginPage">
+
+    <StackLayout Padding="20">
+        <Label Text="Авторизация" FontSize="24" HorizontalOptions="Center"/>
+        <Entry x:Name="UsernameEntry" Placeholder="Логин" Margin="0,10"/>
+        <Entry x:Name="PasswordEntry" Placeholder="Пароль" IsPassword="True" Margin="0,0,0,10"/>
+        <HorizontalStackLayout>
+            <Button Text="Войти" Clicked="OnLoginClicked" CornerRadius="10" BackgroundColor="#7E29C3" Margin="10" />
+            <Button Text="Зарегистрироваться" Clicked="OnRegisterClicked" CornerRadius="10" BackgroundColor="#7E29C3" Margin="10" />
+        </HorizontalStackLayout>
+    </StackLayout>
+</ContentPage>

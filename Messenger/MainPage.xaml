@@ -3,19 +3,14 @@
              x:Class="Messenger.MainPage">
 
     <StackLayout Padding="20">
-        <!-- Поля для авторизации -->
-        <Label Text="Авторизация" FontSize="24" HorizontalOptions="Center"/>
-        <Entry x:Name="UsernameEntry" Placeholder="Логин"/>
-        <Entry x:Name="PasswordEntry" Placeholder="Пароль" IsPassword="True"/>
-        <Button Text="Войти" Clicked="OnLoginClicked"/>
-
-        <!-- Поля для чата -->
         <Label Text="Чат" FontSize="24" HorizontalOptions="Center" Margin="0,20,0,0"/>
-        <ScrollView>
-            <Label x:Name="MessagesLabel" LineBreakMode="WordWrap" />
+        <ScrollView x:Name="MessagesScrollView" HeightRequest="200">
+            <StackLayout x:Name="MessagesStack">
+                <!-- Стек сообщений -->
+            </StackLayout>
         </ScrollView>
-        <Entry x:Name="MessageEntry" Placeholder="Введите сообщение"/>
-        <Button Text="Отправить" Clicked="OnSendClicked"/>
-        <Button Text="Отключиться" Clicked="OnDisconnectClicked"/>
+        <Entry x:Name="MessageEntry" Placeholder="Введите сообщение..." Completed="OnMessageEntryCompleted"/>
+        <Button Text="Отправить" Clicked="OnSendClicked" CornerRadius="10" BackgroundColor="#7E29C3" Margin="0,10"/>
+        <Button Text="Отключиться" Clicked="OnDisconnectClicked" CornerRadius="10" BackgroundColor="#7E29C3" Margin="0,0,0,10"/>
     </StackLayout>
 </ContentPage>

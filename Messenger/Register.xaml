@@ -1,0 +1,12 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Messenger.Register">
+
+    <StackLayout Padding="20">
+        <Label Text="Регистрация" FontSize="24" HorizontalOptions="Center"/>
+        <Entry x:Name="UsernameEntry" Placeholder="Логин" Margin="0,10" Completed="OnRegisterEntryCompleted"/>
+        <Entry x:Name="PasswordEntry" Placeholder="Пароль" IsPassword="True" Margin="0,0,0,10" Completed="OnRegisterEntryCompleted"/>
+        <Entry x:Name="PasswordEntry2" Placeholder="Повторите пароль" IsPassword="True" Margin="0,0,0,10" Completed="OnRegisterEntryCompleted"/>
+        <Button Text="Зарегистрироваться" Clicked="OnRegisterClicked" CornerRadius="10" BackgroundColor="#7E29C3" Margin="10" />
+    </StackLayout>
+</ContentPage>

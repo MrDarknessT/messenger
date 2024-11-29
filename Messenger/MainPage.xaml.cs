@@ -1,8 +1,5 @@
-﻿using System;
-using System.Net.Sockets;
+﻿using System.Net.Sockets;
 using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Maui.Controls;
 
 namespace Messenger
 {
@@ -10,62 +7,74 @@ namespace Messenger
     {
         private TcpClient _client;
         private NetworkStream _stream;
-        private const string ServerIp = "127.0.0.1"; 
-        private const int ServerPort = 5000; 
 
-        public MainPage()
+        public MainPage(TcpClient client, NetworkStream stream)
         {
             InitializeComponent();
-        }
+            _client = client;
+            _stream = stream;
 
-        private async void OnLoginClicked(object sender, EventArgs e)
-        {
-            string username = UsernameEntry.Text;
-            string password = PasswordEntry.Text;
+            // Удаление кнопки навигации "назад"
+            NavigationPage.SetHasBackButton(this, false);
 
-            try
-            {
-                _client = new TcpClient(ServerIp, ServerPort);
-                _stream = _client.GetStream();
-
-                // Отправка данных для авторизации
-                string loginData = $"{username},{password}";
-                byte[] data = Encoding.UTF8.GetBytes(loginData);
-                await _stream.WriteAsync(data, 0, data.Length);
-
-                // Начало прослушивания сообщений от сервера
-                ReceiveMessages();
-            }
-            catch (Exception ex)
-            {
-                await DisplayAlert("Ошибка", ex.Message, "OK");
-            }
+            // Начало прослушивания сообщений от сервера
+            ReceiveMessages();
         }
 
         private async void ReceiveMessages()
         {
             byte[] buffer = new byte[1024];
-            while (_client != null && _client.Connected)
+            try
             {
-                int bytesRead = await _stream.ReadAsync(buffer, 0, buffer.Length);
-                if (bytesRead > 0)
+                while (true)
                 {
+                    int bytesRead = await _stream.ReadAsync(buffer, 0, buffer.Length);
+                    if (bytesRead == 0) break;
+
                     string message = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                    MessagesLabel.Text += message + Environment.NewLine;
+                    AddMessage(message);
                 }
+            }
+            catch (Exception ex)
+            {
+                Cleanup();
+                // Перемещение на страницу авторизации
+                await Navigation.PopAsync();
+                await DisplayAlert("Ошибка прослушивания сервера", ex.Message, "OK");
             }
         }
 
-        private async void OnSendClicked(object sender, EventArgs e)
+        private void OnSendClicked(object sender, EventArgs e)
+        {
+            SendMessage();
+        }
+
+        private void OnMessageEntryCompleted(object sender, EventArgs e)
+        {
+            SendMessage();
+        }
+
+        private async void SendMessage()
         {
             if (_client == null || !_client.Connected) return;
 
             string message = MessageEntry.Text;
             if (!string.IsNullOrWhiteSpace(message))
             {
-                byte[] data = Encoding.UTF8.GetBytes(message);
-                await _stream.WriteAsync(data, 0, data.Length);
-                MessageEntry.Text = string.Empty; // Очистить поле ввода
+                try
+                {
+                    byte[] data = Encoding.UTF8.GetBytes("/message" + message);
+                    await _stream.WriteAsync(data, 0, data.Length);
+                    MessageEntry.Text = string.Empty; // Очистка поля ввода
+                }
+                catch 
+                {
+                    await DisplayAlert("Ошибка", "Ошибка отправки сообщения.", "OK");
+                }
+            }
+            else
+            {
+                await DisplayAlert("Предупреждение", "Сообщение, которые вы хотите отправить, не должно быть пустым.", "OK");
             }
         }
 
@@ -73,11 +82,46 @@ namespace Messenger
         {
             if (_client != null)
             {
-                byte[] data = Encoding.UTF8.GetBytes("/exit");
-                await _stream.WriteAsync(data, 0, data.Length);
-                _client.Close();
+                try
+                {
+                    Cleanup();
+                    // Перемещение на страницу авторизации
+                    await Navigation.PopAsync(); 
+                }
+                catch 
+                {
+                    await DisplayAlert("Ошибка", "Отключение прошло неправильно.", "OK");
+                }
+            }
+        }
+
+        private void AddMessage(string message)
+        {
+            var label = new Label { Text = message };
+            MessagesStack.Children.Add(label);
+
+            MessagesScrollView.ScrollToAsync(0, MessagesStack.Height, true); // Автоматичсекая прокрутка поля сообщений
+        }
+
+        private async void Cleanup()
+        {
+            try
+            {
+                if (_client != null && _client.Connected)
+                {
+                    // Отправка данных для выхода
+                    string registrationData = "/exit";
+                    byte[] data = Encoding.UTF8.GetBytes(registrationData);
+                    await _stream.WriteAsync(data, 0, data.Length);
+                }
+
+                _stream?.Close();
+                _client?.Close();
                 _client = null;
-                MessagesLabel.Text += "Вы отключены." + Environment.NewLine;
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Ошибка завершения сенаса", ex.Message, "OK");
             }
         }
     }
